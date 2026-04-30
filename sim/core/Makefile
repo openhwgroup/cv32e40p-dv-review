@@ -302,10 +302,11 @@ else
 endif
 
 ###############################################################################
-# Set CERT_PRIV=0 to restrict the certify scan to unprivileged ELFs only
-# (elfs/rv32i/ subtree). Default (1) scans all ELFs under elfs/, which
-# includes privileged tests when generated.
-CERT_PRIV ?= 1
+# CV32E40P implements Sm (M-mode only), so ExceptionsSm, InterruptsSm and
+# ExceptionsZc must always be generated.  Override ACT4's default
+# EXCLUDE_EXTENSIONS which silently drops Sm and InterruptsSm.
+# S-mode, PMP, Sv, and known-broken suites remain excluded.
+CERT_EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
 
 ###############################################################################
 # certification test-program directories
@@ -321,7 +322,7 @@ gen: $(ACT4_PKG)
 	@$(MAKE) -C $(ACT4_PKG) clean
 	@echo "* Generating ACT4.0 tests..."
 	@$(MAKE) -C $(ACT4_PKG) \
-		EXTENSIONS=$(CERT_EXTENSIONS) \
+		EXCLUDE_EXTENSIONS=$(CERT_EXCLUDE_EXTENSIONS) \
 		CONFIG_FILES=config/cores/cve4/$(CERT_CONFIG_NAME)/test_config.yaml
 	@echo "* Tests generated in: $(certification_PROGRAM_PATH)"
 	@echo "* Pre-generating .hex files alongside ELFs..."
@@ -345,11 +346,7 @@ certify: verilate
 	SUMMARY="$(VERI_LOG_DIR)/certification_summary.txt"; \
 	echo "RESULT  TEST" > "$$SUMMARY"; \
 	echo "------  ----" >> "$$SUMMARY"; \
-	if [ "$(CERT_PRIV)" = "1" ]; then \
-	  ROOT="$(certification_PROGRAM_PATH)"; \
-	else \
-	  ROOT="$(certification_PROGRAM_PATH)/rv32i"; \
-	fi; \
+	ROOT="$(certification_PROGRAM_PATH)"; \
 	ELFS="$$(find -L "$$ROOT" \( -type f -o -type l \) -a \( -iname '*.elf' -o -iname '*.elf32' \) 2>/dev/null | sort)"; \
 	if [ -z "$$ELFS" ]; then \
 	  echo "No .elf files found under $$ROOT"; \

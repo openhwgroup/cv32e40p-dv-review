@@ -42,6 +42,6 @@ COMPLIANCE_BRANCH ?= master
 COMPLIANCE_HASH   ?= c21a2e86afa3f7d4292a2dd26b759f3f29cde497
 
 # ACT4 (RISC-V Architectural Certification Tests)
-ACT4_REPO   ?= https://github.com/riscv/riscv-arch-test
-ACT4_BRANCH ?= act4
-ACT4_HASH   ?= cba909e9c369387fb0b9f0061d8a07fccb945b95
+ACT4_REPO   ?= https://github.com/karabambus/riscv-arch-test
+ACT4_BRANCH ?= cv32e40p-sail-0.11
+ACT4_HASH   ?= 5984fbcb5c4719b50b4a5b250239872792f2d9fe
