@@ -10,12 +10,40 @@
 # Usage:
 #   run-cve4.sh <elf-file>
 #
-# Environment:
-#   CVE4_SIM — path to the built verilator_executable (required)
-
+# Environment:  
+#   CVE4_DV_ROOT  — path to the cv32e40p-dv checkout (required)                                                                                             
+#   CV_SW_PREFIX  — riscv toolchain prefix (default: riscv64-unknown-elf-) ok lets do step 5
 set -euo pipefail
 
-ELF="${1:?Usage: run-cve4.sh <elf-file>}"
-: "${CVE4_SIM:?CVE4_SIM is not set — point it to the built verilator_executable}"
+CFG=""
+ELF=""
 
-exec "$CVE4_SIM" +elf_file="$ELF"
+while [[ $# -gt 0 ]]; do
+    case "$1" in                                                                                                                                              
+        --cfg) CFG="$2"; shift 2 ;;
+        --elf) ELF="$2"; shift 2 ;;                                                                                                                             
+        *)                     
+        echo "Unknown argument: $1" >&2                                                                                                                       
+        echo "Usage: run-cve4.sh --cfg <CV_CORE_CONFIG> --elf <elf-file>" >&2
+        exit 2                                                                                                                                                
+        ;;                   
+    esac                                                                                                                                                      
+done
+
+: "${CFG:?--cfg is required}"                                                                                                                               
+: "${ELF:?--elf is required}"
+: "${CVE4_DV_ROOT:?CVE4_DV_ROOT is not set}" 
+
+CV_SW_PREFIX="${CV_SW_PREFIX:-riscv64-unknown-elf-}"
+
+SIM="$CVE4_DV_ROOT/sim/core/simulation_results/certification_${CFG}/verilator_executable" 
+[[ -x "$SIM" ]] || { echo "verilator_executable not found for cfg=$CFG at $SIM" >&2; exit 2; } 
+
+
+# Generate <base>.hex if missing or older than the ELF.                                                                                                     
+HEX="${ELF%.*}.hex"                                                                                                                                         
+if [[ ! -f "$HEX" || "$ELF" -nt "$HEX" ]]; then                                                                                                             
+    "${CV_SW_PREFIX}objcopy" -O verilog "$ELF" "$HEX"                                                                                                         
+fi                                                                                                                                                          
+                                                                                                                                                            
+exec "$SIM" "+elf_file=$ELF"
