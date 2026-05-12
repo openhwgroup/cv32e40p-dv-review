@@ -20,7 +20,7 @@ CV_CORE_V100_BRANCH ?= master
 CV_CORE_V100_HASH   ?= 120ac3ee79ef56a57fe07dd8701cd4ee94458fd5  # tag: cv32e40p_v1.0.0
 
 CV_VERIF_REPO   ?= https://github.com/openhwgroup/core-v-verif
-CV_VERIF_BRANCH ?= cv32e40p-dv/dev
+CV_VERIF_BRANCH ?= cv32e40p/dev
 CV_VERIF_HASH   ?= head
 
 RISCVDV_REPO    ?= https://github.com/google/riscv-dv
@@ -42,6 +42,6 @@ COMPLIANCE_BRANCH ?= master
 COMPLIANCE_HASH   ?= c21a2e86afa3f7d4292a2dd26b759f3f29cde497
 
 # ACT4 (RISC-V Architectural Certification Tests)
-ACT4_REPO   ?= https://github.com/riscv/riscv-arch-test
-ACT4_BRANCH ?= act4
-ACT4_HASH   ?= d714306847303a0def3fe8df043257757867034c
+ACT4_REPO   ?= https://github.com/karabambus/riscv-arch-test
+ACT4_BRANCH ?= cv32e40p-sail-0.11
+ACT4_HASH   ?= 5984fbcb5c4719b50b4a5b250239872792f2d9fe
